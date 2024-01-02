@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "extends": [
+    "eslint-config-semistandard"
+  ],
+  "rules": {
+    "space-before-function-paren": ["error", "never"]
+  }
+}
