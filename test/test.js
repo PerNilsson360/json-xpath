@@ -226,5 +226,46 @@ describe('paths', () => {
       const val = evaluate('count(/a/b)', json);
       assert.equal(val.getNumber(), 3);
     });
+    it('count(/a/b/ancestor::a) = 1', () => {
+      const val = evaluate('count(/a/b/ancestor::a)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('local-name(/a/b/ancestor::a) is "a"', () => {
+      const val = evaluate('local-name(/a/b/ancestor::a)', json);
+      assert.equal(val.getString(), 'a');
+    });
+    it('count(/child::a/child::b) = 3', () => {
+      const val = evaluate('count(/child::a/child::b)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/a/..) = 1', () => {
+      const val = evaluate('count(/a/..)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    // @TODO test .. should fail with nice error message
+    it('count(/child::a/..) = 1', () => {
+      const val = evaluate('count(/child::a/..)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('local-name(/a) is "a"', () => {
+      const val = evaluate('local-name(/a)', json);
+      assert.equal(val.getString(), 'a');
+    });
+    it('local-name(/child::a) is "a"', () => {
+      const val = evaluate('local-name(/child::a)', json);
+      assert.equal(val.getString(), 'a');
+    });
+    it('local-name(/a/.) is "a"', () => {
+      const val = evaluate('local-name(/a/.)', json);
+      assert.equal(val.getString(), 'a');
+    });
+    it('local-name(/a/self::*) is "a"', () => {
+      const val = evaluate('local-name(/a/self::*)', json);
+      assert.equal(val.getString(), 'a');
+    });
+    it('local-name(/a/self::a) is "a"', () => {
+      const val = evaluate('local-name(/a/self::a)', json);
+      assert.equal(val.getString(), 'a');
+    });
   });
 });

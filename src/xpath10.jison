@@ -20,8 +20,8 @@ blank [ \t\n]
 ")"                            return ')' 
 "["                            return '[' 
 "]"                            return ']' 
+".."                           return '..'
 "."                            return '.' 
-".."                           return '..' 
 ","                            return ',' 
 "::"                           return '::' 
 "$"                            return '$' 
@@ -76,24 +76,24 @@ RelativeLocationPath
 Step
 : NodeTest                                       { $$ = createStep("", $1); }
 | NodeTest Predicates                            {}
-| AxisSpecifier NodeTest                         {}
+| AxisSpecifier NodeTest                         { $$ = createStep($1, $2); }
 | AxisSpecifier NodeTest Predicates              {}
-| AbbreviatedStep                                {}
+| AbbreviatedStep                                { $$ = createStep("", $1); }
 ;
 
 AxisSpecifier
-:  AxisName "::"                                 {}
+:  AxisName "::"                                 { $$ = $1; }
 ;
 
 AxisName
-: "ancestor"	                                 {}
-| "ancestor-or-self"	                         {}
-| "child"	                                     {}
-| "descendant"	                                 {}
-| "descendant-or-self"	                         {}
-| "following-sibling"	                         {}
-| "parent"	                                     {}
-| "self"                                         {}
+: "ancestor"	                                 { $$ = yytext; }
+| "ancestor-or-self"	                         { $$ = yytext; }
+| "child"	                                     { $$ = yytext; }
+| "descendant"	                                 { $$ = yytext; }
+| "descendant-or-self"	                         { $$ = yytext; }
+| "following-sibling"	                         { $$ = yytext; }
+| "parent"	                                     { $$ = yytext; }
+| "self"                                         { $$ = yytext; }
 ;
 
 NodeTest
@@ -124,8 +124,8 @@ AbbreviatedRelativeLocationPath
 ;
 
 AbbreviatedStep
-: "."                                            {}
-| ".."                                           {}
+: "."                                            { $$ = '.'; }
+| ".."                                           { $$ = '..'; }
 ;
 
 Expr

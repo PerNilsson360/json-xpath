@@ -30,6 +30,10 @@ class Node {
     return this.parent === null ? this : this.parent.getRoot();
   }
 
+  getParent() {
+    return this.parent;
+  }
+
   getJson() {
     return this.json;
   }
@@ -51,6 +55,16 @@ class Node {
 
   getLocalName() {
     return this.name;
+  }
+
+  getAncestors() {
+    const result = [];
+    let parent = this.parent;
+    while (parent != null) {
+      result.push(parent);
+      parent = parent.getParent();
+    }
+    return result;
   }
 }
 

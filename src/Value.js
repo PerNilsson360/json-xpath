@@ -71,8 +71,9 @@ class Value {
     switch (type) {
       case 'number':
       case 'boolean':
-      case 'string':
         return JSON.stringify(this.val);
+      case 'string':
+        return this.val;
       case 'nodeset':
         return this.val.length === 0 ? '' : this.val[0].getString();
       default:
@@ -107,6 +108,15 @@ class Value {
         return this.val;
       default:
         return [];
+    }
+  }
+
+  getLocalName() {
+    const type = this.getType();
+    if (type === 'nodeset' && this.val.length !== 0) {
+      return new Value(this.val[0].getLocalName());
+    } else {
+      return new Value('');
     }
   }
 

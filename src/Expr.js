@@ -1,5 +1,20 @@
 const Value = require('./Value').Value;
 
+// Utility functions
+function addIfUnique(resultSet, nodeSet) {
+  for (let i = 0; i < nodeSet.length; i++) {
+    const node = nodeSet[i];
+    if (!resultSet.find((n) => n === node)) {
+      resultSet.push(node);
+    }
+  }
+}
+
+function checkLocalName(node, name) {
+  return name.length === 0 || name === '*' || n.getLocalName === name;
+}
+
+// Expression classes
 class Expr {
   constructor() {
     this.preds = [];
@@ -132,6 +147,29 @@ class Step extends StrExpr {
   }
 }
 
+class AncestorStep extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    let tmp1;
+    if (firstStep) {
+      tmp1 = nodeSet[pos].getAncestors();
+    } else {
+      for (let i = 0; i < nodeSet.length; i++) {
+        tmp1 = [];
+        const tmp2 = nodeSet[i].getAncestors();
+        addIfUnique(tmp1, tmp2);
+      }
+    }
+    let result;
+    if (this.s !== '*') {
+      result = tmp1.filter((n) => n.getLocalName() === this.s);
+    } else {
+      result = tmp1;
+    }
+    return new Value(result);
+  }
+}
+
 class ChildStep extends Step {
   evalExpr(env, val, pos, firstStep) {
     const nodeSet = val.getNodeSet();
@@ -141,6 +179,65 @@ class ChildStep extends Step {
       result = n.getChild(this.s);
     } else {
       result = nodeSet.map((n) => n.getChild(this.s)).flat();
+    }
+    return new Value(result);
+  }
+}
+
+class ParentStep extends Expr {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    const result = [];
+    if (firstStep) {
+      result.push(nodeSet[pos].getParent());
+    } else {
+      for (let i = 0; i < nodeSet.length; i++) {
+        const parent = nodeSet[i].getParent();
+        // Add parent if not allready added
+        if (!result.find((n) => n === parent)) {
+          result.push(parent);
+        }
+      }
+    }
+    return new Value(result);
+  }
+}
+
+class SelfStep extends Expr {
+  evalExpr(env, val, pos, firstStep) {
+    if (val.getType !== 'nodeset') {
+      return val;
+    }
+    const nodeSet = val.getNodeSet();
+    let result = [];
+    if (firstStep) {
+      result.push(nodeSet[pos]);
+    } else {
+      result = nodeSet;
+    }
+    return new Value(result);
+  }
+}
+
+class SelfMatchStep extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    if (val.getType() !== 'nodeset') {
+      return new Value([]);
+    }
+    const nodeSet = val.getNodeSet();
+    let result = [];
+    if (firstStep) {
+      const n = nodeSet[pos];
+      if (checkLocalName(n, this.s)) { // TODO checks to much probably
+        result.push(n);
+      }
+    } else {
+      for (let i = 0; i < nodeSet.length; i++) {
+        const n = nodeSet[i];
+        if (n.getLocalName() === this.s) {
+          result.push(n);
+        }
+      }
     }
     return new Value(result);
   }
@@ -205,6 +302,23 @@ class CountFun extends Fun {
   evalExpr(env, val, pos, firstStep) {
     const v = this.args[0].eval(env, val, pos, firstStep);
     return v.getNodeSetSize();
+  }
+}
+
+class LocalNameFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgsZeroOrOne(name);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    if (this.args.length === 0) {
+      const node = val.getNode(pos);
+      return node.getLocalName();
+    } else {
+      const v = this.args[0].eval(env, val, pos, firstStep);
+      return v.getLocalName();
+    }
   }
 }
 
