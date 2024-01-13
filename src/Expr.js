@@ -11,7 +11,7 @@ function addIfUnique(resultSet, nodeSet) {
 }
 
 function checkLocalName(node, name) {
-  return name.length === 0 || name === '*' || n.getLocalName === name;
+  return name.length === 0 || name === '*' || node.getLocalName() === name;
 }
 
 // Expression classes
@@ -98,6 +98,23 @@ class Path extends MultiExpr {
     }
     return result;
   }
+  createDescendant() {
+    // The grammar ensures there is at least one step
+    const step = this.exps[0];
+    let descendant;
+    if (Step.isAllStep(step)) {
+      descendant = new DescendantAll();
+      descendant.addPredicats(step.takePredicates());
+      this.exps.shift();
+    } else if (Step.isSelfOrParentStep(step)) {
+      descendant = new DescentantAll();
+    } else {
+      descendant = new DescendantAll(step.s);
+      descendant.addPredicats(step.takePredicates());
+      this.exps.shift();
+    }
+    return descendant;
+  }
 }
 
 class Root extends Expr {
@@ -147,6 +164,20 @@ class Step extends StrExpr {
   }
 }
 
+class AllStep extends Expr {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    if (firstStep) {
+      return new Value(nodeSet[pos].getChildren());
+    } else {
+      return new Value(nodeSet.map((n) => {
+        console.log(`child name ${n.constructor.name}`);
+        return n.getChildren();
+      }).flat());
+    }
+  }
+}
+
 class AncestorStep extends Step {
   evalExpr(env, val, pos, firstStep) {
     const nodeSet = val.getNodeSet();
@@ -165,6 +196,30 @@ class AncestorStep extends Step {
       result = tmp1.filter((n) => n.getLocalName() === this.s);
     } else {
       result = tmp1;
+    }
+    return new Value(result);
+  }
+}
+
+class ParentMatchStep extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    const result = [];
+    if (firstStep) {
+      const nodeSet = val.getNodeSet();
+      const parent = nodeSet[pos].getParent();
+      if (parent !== null && checkLocalName(parent, this.s)) {
+        result.push(result);
+      }
+    } else {
+      for (let i = 0; i < nodeSet.length; i++) {
+        const parent = nodeSet[i].getParent();
+        if (parent !== null && checkLocalName(parent, this.s)) {
+          if (!result.find((n) => n === parent)) {
+            result.push(parent);
+          }
+        }
+      }
     }
     return new Value(result);
   }
@@ -225,7 +280,7 @@ class SelfMatchStep extends Step {
       return new Value([]);
     }
     const nodeSet = val.getNodeSet();
-    let result = [];
+    const result = [];
     if (firstStep) {
       const n = nodeSet[pos];
       if (checkLocalName(n, this.s)) { // TODO checks to much probably

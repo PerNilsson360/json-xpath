@@ -267,5 +267,99 @@ describe('paths', () => {
       const val = evaluate('local-name(/a/self::a)', json);
       assert.equal(val.getString(), 'a');
     });
+    it('count(/a/self::b) = 0', () => {
+      const val = evaluate('count(/a/self::b)', json);
+      assert.equal(val.getNumber(), 0);
+    });
+    it('count(/a/child::*) = 3', () => {
+      const val = evaluate('count(/a/child::*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+  });
+  describe('paths on {"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}', () => {
+    const json = '{"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}';
+    it('count(/a) = 1', () => {
+      const val = evaluate('count(/a)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b) = 1', () => {
+      const val = evaluate('count(/a/b)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b/parent::a) = 1', () => {
+      const val = evaluate('count(/a/b/parent::a)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b/parent::*) = 1', () => {
+      const val = evaluate('count(/a/b/parent::*)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b/parent::c) = 1', () => {
+      const val = evaluate('count(/a/b/parent::c)', json);
+      assert.equal(val.getNumber(), 0);
+    });
+    it('count(/count(/a/b/c)) = 1', () => {
+      const val = evaluate('count(/a/b/c)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/count(/a/b/c/e)) = 1', () => {
+      const val = evaluate('count(/a/b/c/e)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    // TODO
+    // it('count(/count(//e)) = 1', () => {
+    //   const val = evaluate('count(//e)', json);
+    //   assert.equal(val.getNumber(), 2);
+    // });
+    // it('count(/count(//e/ancestor::c)) = 2', () => {
+    //   const val = evaluate('count(//e/ancestor::c)', json);
+    //   assert.equal(val.getNumber(), 2);
+    // });
+    // it('count(/count(//e/ancestor::c)) = 2', () => {
+    //   const val = evaluate('count(//e/ancestor::b)', json);
+    //   assert.equal(val.getNumber(), 1);
+    // });
+    // it('count(/count(//e/ancestor::c)) = 2', () => {
+    //   const val = evaluate('count(//e/ancestor::*)', json);
+    //   assert.equal(val.getNumber(), 6);
+    // });
+    // it('count(/count(/descendant::e)) = 2', () => {
+    //   const val = evaluate('count(/descendant::e)', json);
+    //   assert.equal(val.getNumber(), 2);
+    // });
+  });
+  describe('path with * on {"a":{"b":1,"c":true,"d":"foo"}}', () => {
+    const json = '{"a":{"b":1,"c":true,"d":"foo"}}';
+    it('count(/*) = 1', () => {
+      const val = evaluate('count(/*)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('/* string is 1truefoo', () => {
+      const val = evaluate('/*', json);
+      assert.equal(val.getString(), '1truefoo');
+    });
+    it('count(/a/*) = 3', () => {
+      const val = evaluate('count(/a/*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('/a/* string value is 1truefoo', () => {
+      const val = evaluate('/*', json);
+      assert.equal(val.getStringValue(), '1truefoo');
+    });
+  });
+  describe('following-sibling on {"a":{"b": [{"b": 1},{"b": 2},{"c":3}]}}', () => {
+    const json = '{"a":{"b": [{"b": 1},{"b": 2},{"c":3}]}}';
+    it('count(/a/*) = 3', () => {
+      const val = evaluate('count(/a/*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('/a/* string is 123', () => {
+      const val = evaluate('/a/*', json);
+      assert.equal(val.getStringValue(), '123');
+    });
+    it('count(/a/b/*) = 3', () => {
+      const val = evaluate('count(/a/b/*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
   });
 });

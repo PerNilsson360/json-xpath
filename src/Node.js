@@ -77,6 +77,11 @@ class ObjectNode extends Node {
     return this.children.filter((n) => n.getLocalName() === name);
   }
 
+  getChildren() {
+    this.instantiateChildren();
+    return this.children;
+  }
+
   addChildNode(name, json) {
     if (Array.isArray(json)) {
       for (let i = 0; i < json.length; i++) {
@@ -92,14 +97,14 @@ class ObjectNode extends Node {
   instantiateChildren() {
     if (this.children === undefined) {
       this.children = [];
-      for (const key of Object.keys(this.json)) {
+      for (const key of Object.keys(this.getJson())) {
         this.addChildNode(key, this.json[key]);
       }
     }
   }
 }
 
-class ArrayNode extends Node {
+class ArrayNode extends ObjectNode {
   constructor(parent, name, json, i) {
     super(parent, name, json);
     this.i = i;
