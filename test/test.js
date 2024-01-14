@@ -453,9 +453,95 @@ describe('paths', () => {
   });
   describe('descendant on {"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}', () => {
     const json = '{"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}';
-    it('count(//a) = 1 ', () => {
+    it('count(//a) = 1', () => {
       const val = evaluate('count(//a)', json);
       assert.equal(val.getNumber(), 1);
+    });
+    it('count(//b) = 1', () => {
+      const val = evaluate('count(//b)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/descendant::b) = 1', () => {
+      const val = evaluate('count(/descendant::b)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/descendant::b/c) = 1', () => {
+      const val = evaluate('count(/descendant::b/c)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(//c) = 2', () => {
+      const val = evaluate('count(//c)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/descendant::c) = 2', () => {
+      const val = evaluate('count(//c)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(//c/e) = 2', () => {
+      const val = evaluate('count(//c/e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/descendant::c/e) = 2', () => {
+      const val = evaluate('count(/descendant::c/e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/descendant::e) = 2', () => {
+      const val = evaluate('count(/descendant::e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/a//e) = 2', () => {
+      const val = evaluate('count(/descendant::e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/a/descendant::e) = 2', () => {
+      const val = evaluate('count(/descendant::e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(//e/..) = 2', () => {
+      const val = evaluate('count(//e/..)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(//descendant::e/..) = 2', () => {
+      const val = evaluate('count(//e/..)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(//e/../../..) = 1', () => {
+      const val = evaluate('count(//e/../../..)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(//descendant::e/../../..) = 1', () => {
+      const val = evaluate('count(//e/../../..)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+  });
+  describe('descendant on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('count(//b) = 4', () => {
+      const val = evaluate('count(//b)', json);
+      assert.equal(val.getNumber(), 4);
+    });
+    it('count(/descendant::b) = 4', () => {
+      const val = evaluate('count(/descendant::b)', json);
+      assert.equal(val.getNumber(), 4);
+    });
+    it('count(//*) = 5', () => {
+      const val = evaluate('count(//*)', json);
+      assert.equal(val.getNumber(), 5);
+    });
+    it('count(/descendant::*) = 5', () => {
+      const val = evaluate('count(/descendant::*)', json);
+      assert.equal(val.getNumber(), 5);
+    });
+    it('count(//.) = 5', () => {
+      const val = evaluate('count(//.)', json);
+      assert.equal(val.getNumber(), 5);
+    });
+  });
+  describe('paths on {"a":{"a":{"a":1}}}', () => {
+    const json = '{"a":{"a":{"a":1}}}';
+    it('count(//a) = 3', () => {
+      const val = evaluate('count(//a)', json);
+      assert.equal(val.getNumber(), 3);
     });
   });
 });
