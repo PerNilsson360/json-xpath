@@ -1,3 +1,25 @@
+// MIT license
+//
+// Copyright 2023 Per Nilsson
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the “Software”), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 /* eslint-env mocha */
 const assert = require('assert');
 const evaluate = require('../src/Eval').evaluate;
@@ -360,6 +382,80 @@ describe('paths', () => {
     it('count(/a/b/*) = 3', () => {
       const val = evaluate('count(/a/b/*)', json);
       assert.equal(val.getNumber(), 3);
+    });
+    // TODO
+    // r = (eval("count(/a/b/following-sibling::*)", document));
+    // assert(r.getNumber() == 2);
+    // r = eval("/a/b/following-sibling::*", document);
+    // assert(r.getStringValue() == "23");
+    // r = eval("/a/b/following-sibling::*[2]", document);
+    // assert(r.getStringValue() == "3");
+    // r = eval("count(/a/b[b = 2]/following-sibling::*)", document);
+    // assert(r.getNumber() == 1);
+    // r = eval("/a/b[b = 2]/following-sibling::*", document);
+    // assert(r.getStringValue() == "3");
+    // r = (eval("count(/a/b/following-sibling::b)", document));
+    // assert(r.getNumber() == 2);
+    // r = (eval("/a/b/following-sibling::b", document));
+    // assert(r.getStringValue() == "23");
+    // r = eval("/a/b/following-sibling::b[1]", document);
+    // assert(r.getStringValue() == "2");
+    // r = eval("count(/a/b[b = 2]/following-sibling::b)", document);
+    // assert(r.getNumber() == 1);
+    // r = eval("/a/b[b = 2]/following-sibling::b", document);
+    // assert(r.getStringValue() == "3");
+  });
+  describe('Descendant on {"a":3}', () => {
+    const json = '{"a":3}';
+    it('count(//a) = 1', () => {
+      const val = evaluate('count(//a)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(//*) = 1', () => {
+      const val = evaluate('count(//*)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/descendant::*) = 1', () => {
+      const val = evaluate('count(/descendant::*)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(//.) = 1', () => {
+      const val = evaluate('count(//.)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+  });
+  describe('descendant on {"a":{"b":3,"c":1}}', () => {
+    const json = '{"a":{"b":3,"c":1}}';
+    it('count(//a) = 1', () => {
+      const val = evaluate('count(//a)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/descendant::a) = 1', () => {
+      const val = evaluate('count(/descendant::a)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(//*) = 3', () => {
+      const val = evaluate('count(//*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/descendant::*) = 3', () => {
+      const val = evaluate('count(/descendant::*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(//b) = 1', () => {
+      const val = evaluate('count(//b)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('local-name(//b/..) is "a"', () => {
+      const val = evaluate('local-name(//b/..)', json);
+      assert.equal(val.getString(), 'a');
+    });
+  });
+  describe('descendant on {"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}', () => {
+    const json = '{"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}';
+    it('count(//a) = 1 ', () => {
+      const val = evaluate('count(//a)', json);
+      assert.equal(val.getNumber(), 1);
     });
   });
 });

@@ -1,3 +1,25 @@
+// MIT license
+//
+// Copyright 2024 Per Nilsson
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the “Software”), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 const Value = require('./Value').Value;
 
 // Utility functions
@@ -98,22 +120,42 @@ class Path extends MultiExpr {
     }
     return result;
   }
+
   createDescendant() {
     // The grammar ensures there is at least one step
     const step = this.exps[0];
     let descendant;
     if (Step.isAllStep(step)) {
       descendant = new DescendantAll();
-      descendant.addPredicats(step.takePredicates());
+      descendant.addPredicates(step.takePredicates());
       this.exps.shift();
     } else if (Step.isSelfOrParentStep(step)) {
-      descendant = new DescentantAll();
+      descendant = new DescendantAll();
     } else {
-      descendant = new DescendantAll(step.s);
-      descendant.addPredicats(step.takePredicates());
+      descendant = new DescendantSearch(step.s);
+      descendant.addPredicates(step.takePredicates());
       this.exps.shift();
     }
     return descendant;
+  }
+
+  addAbsoluteDescendant() {
+    this.exps.unshift(this.createDescendant());
+    this.exps.unshift(new Root());
+  }
+
+  addRelativeDescendant(step) {
+    let descendant;
+    if (Step.isAllStep(step)) {
+      descendant = new DescendantAll();
+      descendant.addPredicates(step.takePredicates());
+    } else if (Step.isSelfOrParentStep(step)) {
+      descendant = new DescendantAll();
+    } else {
+      descendant = new DescendantSearch(step.s);
+      descendant.addPredicates(step.takePredicates());
+    }
+    this.exprs.push(descendant);
   }
 }
 
@@ -162,6 +204,16 @@ class Step extends StrExpr {
         throw new Error('Step.create not a supported step');
     }
   }
+
+  static isAllStep(step) {
+    return step.constructor.name === 'AllStep';
+  }
+
+  static isSelfOrParentStep(step) {
+    const n = step.constructor.name;
+    return n === 'SelfStep' || n === 'SelfMatchStep' ||
+      n === 'ParenStep' || n === 'ParentMatchStep';
+  }
 }
 
 class AllStep extends Expr {
@@ -170,10 +222,7 @@ class AllStep extends Expr {
     if (firstStep) {
       return new Value(nodeSet[pos].getChildren());
     } else {
-      return new Value(nodeSet.map((n) => {
-        console.log(`child name ${n.constructor.name}`);
-        return n.getChildren();
-      }).flat());
+      return new Value(nodeSet.map((n) => n.getChildren()).flat());
     }
   }
 }
@@ -295,6 +344,20 @@ class SelfMatchStep extends Step {
       }
     }
     return new Value(result);
+  }
+}
+
+class DescendantAll extends Expr {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    return new Value(nodeSet.map((n) => n.getSubTreeNodes()).flat());
+  }
+}
+
+class DescendantSearch extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    return new Value(nodeSet.map((n) => n.search(this.s)).flat());
   }
 }
 
