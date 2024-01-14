@@ -250,6 +250,12 @@ class AncestorStep extends Step {
   }
 }
 
+class AncestorSelfStep extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    // TODO
+  }
+}
+
 class ParentMatchStep extends Step {
   evalExpr(env, val, pos, firstStep) {
     const nodeSet = val.getNodeSet();
@@ -358,6 +364,24 @@ class DescendantSearch extends Step {
   evalExpr(env, val, pos, firstStep) {
     const nodeSet = val.getNodeSet();
     return new Value(nodeSet.map((n) => n.search(this.s)).flat());
+  }
+}
+
+class DescendantOrSelfAll extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    const selfNodes = nodeSet.filter((n) => n.getLocalName() !== ''); // skip root node
+    const searchNodes = nodeSet.map((n) => n.getSubTreeNodes()).flat();
+    return new Value(selfNodes.concat(searchNodes));
+  }
+}
+
+class DescendantOrSelfSearch extends Step {
+  evalExpr(env, val, pos, firstStep) {
+    const nodeSet = val.getNodeSet();
+    const selfNodes = nodeSet.filter((n) => n.getLocalName() === this.s);
+    const subTreeNodes = nodeSet.map((n) => n.search(this.s)).flat();
+    return new Value(selfNodes.concat(subTreeNodes));
   }
 }
 

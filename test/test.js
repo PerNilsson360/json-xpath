@@ -543,5 +543,78 @@ describe('paths', () => {
       const val = evaluate('count(//a)', json);
       assert.equal(val.getNumber(), 3);
     });
+    it('count(/descendant::a) = 3', () => {
+      const val = evaluate('count(/descendant::a)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/descendant-or-self::a) = 3', () => {
+      const val = evaluate('count(/descendant-or-self::a)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/a/descendant-or-self::a) = 3', () => {
+      const val = evaluate('count(/a/descendant-or-self::a)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/descendant-or-self::*) = 3', () => {
+      const val = evaluate('count(/a/descendant-or-self::*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/a/descendant-or-self::*) = 3', () => {
+      const val = evaluate('count(/a/descendant-or-self::*)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(//a/a) = 2', () => {
+      const val = evaluate('count(//a/a)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/descendant::a/a) = 2', () => {
+      const val = evaluate('count(/descendant::a/a)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(//.) = 3', () => {
+      const val = evaluate('count(//.)', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    // TODO
+    // it('count(/a/a/a/ancestor-or-self::a) = 3', () => {
+    //   const val = evaluate('count(/a/a/a/ancestor-or-self::a)', json);
+    //   assert.equal(val.getNumber(), 3);
+    // });
+  });
+  describe('paths on {"a":[{"a":1},{"a":2},{"b":3}]}', () => {
+    const json = '{"a":[{"a":1},{"a":2},{"b":3}]}';
+    it('count(//a) = 5', () => {
+      const val = evaluate('count(//a)', json);
+      assert.equal(val.getNumber(), 5);
+    });
+    it('count(/descendant::a) = 5', () => {
+      const val = evaluate('count(/descendant::a)', json);
+      assert.equal(val.getNumber(), 5);
+    });
+    it('count(/a/descendant-or-self::a) = 5', () => {
+      const val = evaluate('count(/a/descendant-or-self::a)', json);
+      assert.equal(val.getNumber(), 5);
+    });
+    it('count(//*) = 6', () => {
+      const val = evaluate('count(//*)', json);
+      assert.equal(val.getNumber(), 6);
+    });
+    it('count(//.) = 6', () => {
+      const val = evaluate('count(//.)', json);
+      assert.equal(val.getNumber(), 6);
+    });
+    // TODO
+    // it('//a is 12312', () => {
+    //   const val = evaluate('//a', json);
+    //   assert.equal(val.getStringValue(), '12312');
+    // });
+    // it('/descendant::a is 12312', () => {
+    //   const val = evaluate('/descendant::a', json);
+    //   assert.equal(val.getStringValue(), '12312');
+    // });
+    // it('count(/a/a/ancestor-or-self::a) = 4', () => {
+    //   const val = evaluate('count(/a/a/ancestor-or-self::a)', json);
+    //   assert.equal(val.getNumber(), 4);
+    // });
   });
 });

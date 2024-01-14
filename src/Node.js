@@ -91,6 +91,10 @@ class Node {
 }
 
 class LeafNode extends Node {
+  getChild() {
+    return [];
+  }
+
   getSubTreeNodes() {
     return [];
   }
