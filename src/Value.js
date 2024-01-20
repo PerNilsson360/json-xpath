@@ -176,28 +176,24 @@ class Value {
     }
     return result;
   }
-}
 
-function consoleLogValue(value) {
-  const type = value.getType();
-  const val = value.getVal();
-  switch (type) {
-    case 'nodeset': {
-      let s = '[';
-      for (let i = 0; i < val.length; i++) {
-        if (i > 0) {
-          s += ', ';
+  toString() {
+    switch (this.getType()) {
+      case 'nodeset': {
+        let s = '[';
+        for (let i = 0; i < this.val.length; i++) {
+          if (i > 0) {
+            s += ', ';
+          }
+          s += `${JSON.stringify(this.val[i].getJson())}`;
         }
-        s += `${JSON.stringify(val[i].getJson())}`;
+        s += ']';
+        return s;
       }
-      s += ']';
-      console.log(s);
-      break;
+      default:
+        return `${this.val}`;
     }
-    default:
-      console.log(`${val}`);
   }
 }
 
 exports.Value = Value;
-exports.consoleLogValue = consoleLogValue;

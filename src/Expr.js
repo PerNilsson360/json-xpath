@@ -228,31 +228,42 @@ class AllStep extends Expr {
 }
 
 class AncestorStep extends Step {
-  evalExpr(env, val, pos, firstStep) {
+  getNodes(env, val, pos, firstStep) {
     const nodeSet = val.getNodeSet();
     let tmp1;
     if (firstStep) {
       tmp1 = nodeSet[pos].getAncestors();
     } else {
+      tmp1 = [];
       for (let i = 0; i < nodeSet.length; i++) {
-        tmp1 = [];
         const tmp2 = nodeSet[i].getAncestors();
         addIfUnique(tmp1, tmp2);
       }
     }
+    return tmp1;
+  }
+
+  filterNodes(nodes) {
     let result;
     if (this.s !== '*') {
-      result = tmp1.filter((n) => n.getLocalName() === this.s);
+      result = nodes.filter((n) => n.getLocalName() === this.s);
     } else {
-      result = tmp1;
+      result = nodes;
     }
     return new Value(result);
   }
+
+  evalExpr(env, val, pos, firstStep) {
+    const ancestorNodes = this.getNodes(env, val, pos, firstStep);
+    return this.filterNodes(ancestorNodes);
+  }
 }
 
-class AncestorSelfStep extends Step {
+class AncestorSelfStep extends AncestorStep {
   evalExpr(env, val, pos, firstStep) {
-    // TODO
+    const ancestorNodes = this.getNodes(env, val, pos, firstStep);
+    const selfNodes = SelfStep.getNodes(env, val, pos, firstStep);
+    return this.filterNodes(selfNodes.concat(ancestorNodes));
   }
 }
 
@@ -314,10 +325,7 @@ class ParentStep extends Expr {
 }
 
 class SelfStep extends Expr {
-  evalExpr(env, val, pos, firstStep) {
-    if (val.getType !== 'nodeset') {
-      return val;
-    }
+  static getNodes(env, val, pos, firstStep) {
     const nodeSet = val.getNodeSet();
     let result = [];
     if (firstStep) {
@@ -325,7 +333,14 @@ class SelfStep extends Expr {
     } else {
       result = nodeSet;
     }
-    return new Value(result);
+    return result;
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    if (val.getType !== 'nodeset') {
+      return val;
+    }
+    return new Value(this.getNodes(env, val, pos, firstStep));
   }
 }
 

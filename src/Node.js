@@ -142,8 +142,9 @@ class ObjectNode extends Node {
   instantiateChildren() {
     if (this.children === undefined) {
       this.children = [];
-      for (const key of Object.keys(this.getJson())) {
-        this.addChildNode(key, this.json[key]);
+      const json = this.getJson();
+      for (const key of Object.keys(json)) {
+        this.addChildNode(key, json[key]);
       }
     }
   }

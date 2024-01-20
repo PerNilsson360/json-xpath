@@ -320,35 +320,34 @@ describe('paths', () => {
       const val = evaluate('count(/a/b/parent::c)', json);
       assert.equal(val.getNumber(), 0);
     });
-    it('count(/count(/a/b/c)) = 1', () => {
+    it('count(/a/b/c) = 1', () => {
       const val = evaluate('count(/a/b/c)', json);
       assert.equal(val.getNumber(), 1);
     });
-    it('count(/count(/a/b/c/e)) = 1', () => {
+    it('count(/a/b/c/e) = 1', () => {
       const val = evaluate('count(/a/b/c/e)', json);
       assert.equal(val.getNumber(), 1);
     });
-    // TODO
-    // it('count(/count(//e)) = 1', () => {
-    //   const val = evaluate('count(//e)', json);
-    //   assert.equal(val.getNumber(), 2);
-    // });
-    // it('count(/count(//e/ancestor::c)) = 2', () => {
-    //   const val = evaluate('count(//e/ancestor::c)', json);
-    //   assert.equal(val.getNumber(), 2);
-    // });
-    // it('count(/count(//e/ancestor::c)) = 2', () => {
-    //   const val = evaluate('count(//e/ancestor::b)', json);
-    //   assert.equal(val.getNumber(), 1);
-    // });
-    // it('count(/count(//e/ancestor::c)) = 2', () => {
-    //   const val = evaluate('count(//e/ancestor::*)', json);
-    //   assert.equal(val.getNumber(), 6);
-    // });
-    // it('count(/count(/descendant::e)) = 2', () => {
-    //   const val = evaluate('count(/descendant::e)', json);
-    //   assert.equal(val.getNumber(), 2);
-    // });
+    it('count(//e) = 1', () => {
+      const val = evaluate('count(//e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/count(//e/ancestor::c)) = 2', () => {
+      const val = evaluate('count(//e/ancestor::c)', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/count(//e/ancestor::b)) = 2', () => {
+      const val = evaluate('count(//e/ancestor::b)', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/count(//e/ancestor::*)) = 2', () => {
+      const val = evaluate('count(//e/ancestor::*)', json);
+      assert.equal(val.getNumber(), 6);
+    });
+    it('count(/count(/descendant::e)) = 2', () => {
+      const val = evaluate('count(/descendant::e)', json);
+      assert.equal(val.getNumber(), 2);
+    });
   });
   describe('path with * on {"a":{"b":1,"c":true,"d":"foo"}}', () => {
     const json = '{"a":{"b":1,"c":true,"d":"foo"}}';
@@ -575,11 +574,10 @@ describe('paths', () => {
       const val = evaluate('count(//.)', json);
       assert.equal(val.getNumber(), 3);
     });
-    // TODO
-    // it('count(/a/a/a/ancestor-or-self::a) = 3', () => {
-    //   const val = evaluate('count(/a/a/a/ancestor-or-self::a)', json);
-    //   assert.equal(val.getNumber(), 3);
-    // });
+    it('count(/a/a/a/ancestor-or-self::a) = 3', () => {
+      const val = evaluate('count(/a/a/a/ancestor-or-self::a)', json);
+      assert.equal(val.getNumber(), 3);
+    });
   });
   describe('paths on {"a":[{"a":1},{"a":2},{"b":3}]}', () => {
     const json = '{"a":[{"a":1},{"a":2},{"b":3}]}';
@@ -603,18 +601,17 @@ describe('paths', () => {
       const val = evaluate('count(//.)', json);
       assert.equal(val.getNumber(), 6);
     });
-    // TODO
-    // it('//a is 12312', () => {
-    //   const val = evaluate('//a', json);
-    //   assert.equal(val.getStringValue(), '12312');
-    // });
-    // it('/descendant::a is 12312', () => {
-    //   const val = evaluate('/descendant::a', json);
-    //   assert.equal(val.getStringValue(), '12312');
-    // });
-    // it('count(/a/a/ancestor-or-self::a) = 4', () => {
-    //   const val = evaluate('count(/a/a/ancestor-or-self::a)', json);
-    //   assert.equal(val.getNumber(), 4);
-    // });
+    it('//a is 12312', () => {
+      const val = evaluate('//a', json);
+      assert.equal(val.getStringValue(), '12312');
+    });
+    it('/descendant::a is 12312', () => {
+      const val = evaluate('/descendant::a', json);
+      assert.equal(val.getStringValue(), '12312');
+    });
+    it('count(/a/a/ancestor-or-self::a) = 4', () => {
+      const val = evaluate('count(/a/a/ancestor-or-self::a)', json);
+      assert.equal(val.getNumber(), 4);
+    });
   });
 });
