@@ -71,6 +71,21 @@ class Node {
     }
   }
 
+  equal(val) {
+    if (val instanceof Node) {
+      return this.getString() === val.getString();
+    } else {
+      const rightType = typeof val;
+      if (typeof this.json === rightType) {
+        return this.json === val;
+      } else if (rightType === 'string') {
+        return this.getString() === val;
+      } else {
+        return this.getString() === JSON.stringify(val);
+      }
+    }
+  }
+  
   getString() {
     return getString(this.getJson());
   }
@@ -87,6 +102,10 @@ class Node {
       parent = parent.getParent();
     }
     return result;
+  }
+
+  toString() {
+    return `<${this.name}>${this.json}</${this.name}>`;
   }
 }
 

@@ -157,7 +157,7 @@ Expr
 PrimaryExpr
 : VariableReference                              {}
 | "(" Expr ")"	                                 { $$ = $2; }
-| LITERAL	                                     { $$ = new StringLiteral(yytext); }
+| LITERAL	                                     { $$ = new StringLiteral(yytext.substring(1,yytext.length - 1)); }
 | NUMBER	                                     { $$ = new NumericLiteral(Number(yytext)); }
 | FunctionCall                                   { $$ = $1; }
 ;
@@ -199,7 +199,7 @@ AndExpr
 
 EqualityExpr
 : RelationalExpr	                             { $$ = $1; }
-| EqualityExpr "=" RelationalExpr	             {}
+| EqualityExpr "=" RelationalExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.equal(b), (a) => a); }
 | EqualityExpr "!=" RelationalExpr               {}
 ;
 

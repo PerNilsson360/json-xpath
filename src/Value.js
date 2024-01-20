@@ -151,6 +151,31 @@ class Value {
     }
   }
 
+  equal(val) {
+    let result = false;
+    if (this.getType() === 'nodeset' && val.getType() === 'nodeset') {
+      const l = this.getNodeSet();
+      const r = val.getNodeSet();
+      for (let i = 0; i < l.length; i++) {
+        if (r.some((n) => n.equal(l[i]))) {
+          result = true;
+          break;
+        }
+      }
+    } else if (this.getType() === 'nodeset') {
+      result = this.getNodeSet().some((n) => n.equal(val.getVal()));
+    } else if (val.getType() === 'nodeset') {
+      result = val.getNodeSet().some((n) => n.equal(this.getVal()));
+    } else if (this.getType() === 'boolean' && val.getType() === 'boolean') {
+      result = this.getBoolean() === val.getBoolean();
+    } else if (this.getType() === 'number' && val.getType() === 'number') {
+      result = this.getNumber() === val.getNumber();
+    } else {
+      result = this.getString() === val.getString();
+    }
+    return result;
+  }
+  
   getNodeSetSize() {
     const type = this.getType();
     switch (type) {
