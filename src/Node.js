@@ -20,15 +20,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-function getNumber(json) {
-  switch (typeof json) {
-    case 'number': return json;
-    case 'string': return json.length === 0 ? NaN : Number(json);
-    case 'boolean': return Number(json);
-    default: return NaN;
-  }
-}
-
 function getString(json) {
   let result = '';
   const type = typeof json;
@@ -48,6 +39,15 @@ function getString(json) {
     result = JSON.stringify(json);
   }
   return result;
+}
+
+function getNumber(json) {
+  switch (typeof json) {
+    case 'number': return json;
+    case 'string': return json.length === 0 ? NaN : Number(json);
+    case 'boolean': return Number(json);
+    default: return getNumber(getString(json));
+  }
 }
 
 class Node {
@@ -91,7 +91,7 @@ class Node {
     }
   }
 
-  compare(val, relation) {
+  compareEquality(val, relation) {
     const nonPrimitive = (val) => typeof val === 'object' || Array.isArray(val);
     const leftNonPrimitiv = nonPrimitive(this.json);
     const rightNonPrimitive = nonPrimitive(val);

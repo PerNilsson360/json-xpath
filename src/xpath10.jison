@@ -27,11 +27,11 @@ blank [ \t\n]
 %%
 {blank}+             /* skip whitespace */
 "="                            return '=' 
-"!="                           return '!='        
+"!="                           return '!='
+"<="                           return '<='        
 "<"                            return '<' 
-"<="                           return '<='
-">"                            return '>' 
-">="                           return '>=' 
+">="                           return '>='
+">"                            return '>'    
 "-"                            return '-' 
 "+"                            return '+'
 "*"                            return '*'
@@ -199,16 +199,16 @@ AndExpr
 
 EqualityExpr
 : RelationalExpr	                             { $$ = $1; }
-| EqualityExpr "=" RelationalExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compare(b, (a, b) => a === b), (a) => a); }
-| EqualityExpr "!=" RelationalExpr               { $$ = new BinaryExpr($1, $3, (a, b) => a.compare(b, (a, b) => a !== b), (a) => a); }
+| EqualityExpr "=" RelationalExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compareEquality(b, (a, b) => a === b), (a) => a); }
+| EqualityExpr "!=" RelationalExpr               { $$ = new BinaryExpr($1, $3, (a, b) => a.compareEquality(b, (a, b) => a !== b), (a) => a); }
 ;
 
 RelationalExpr
 : AdditiveExpr	                                 { $$ = $1; }
-| RelationalExpr "<" AdditiveExpr	             {}
-| RelationalExpr ">" AdditiveExpr	             {}
-| RelationalExpr "<=" AdditiveExpr	             {}
-| RelationalExpr ">=" AdditiveExpr               {}
+| RelationalExpr "<" AdditiveExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compareOrdering(b, (a, b) => a < b), (a) => a); }
+| RelationalExpr ">" AdditiveExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compareOrdering(b, (a, b) => a > b), (a) => a); }
+| RelationalExpr "<=" AdditiveExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compareOrdering(b, (a, b) => a <= b), (a) => a); }
+| RelationalExpr ">=" AdditiveExpr               { $$ = new BinaryExpr($1, $3, (a, b) => a.compareOrdering(b, (a, b) => a >= b), (a) => a); }
 ;
 
 AdditiveExpr

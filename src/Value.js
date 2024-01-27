@@ -151,27 +151,48 @@ class Value {
     }
   }
 
-  compare(val, relation) {
+  compareEquality(val, relation) {
     let result = false;
     if (this.getType() === 'nodeset' && val.getType() === 'nodeset') {
       const l = this.getNodeSet();
       const r = val.getNodeSet();
-      for (let i = 0; i < l.length; i++) {
-        if (r.some((n) => n.compare(l[i], relation))) {
+      for (let i = 0; i < r.length; i++) {
+        if (l.some((n) => n.compareEquality(r[i], relation))) {
           result = true;
           break;
         }
       }
     } else if (this.getType() === 'nodeset') {
-      result = this.getNodeSet().some((n) => n.compare(val.getVal(), relation));
+      result = this.getNodeSet().some((n) => n.compareEquality(val.getVal(), relation));
     } else if (val.getType() === 'nodeset') {
-      result = val.getNodeSet().some((n) => n.compare(this.getVal(), relation));
+      result = val.getNodeSet().some((n) => n.compareEquality(this.getVal(), relation));
     } else if (this.getType() === 'boolean' && val.getType() === 'boolean') {
       result = relation(this.getBoolean(), val.getBoolean());
     } else if (this.getType() === 'number' && val.getType() === 'number') {
       result = relation(this.getNumber(), val.getNumber());
     } else {
       result = relation(this.getString(), val.getString());
+    }
+    return result;
+  }
+
+  compareOrdering(val, relation) {
+    let result = false;
+    if (this.getType() === 'nodeset' && val.getType() === 'nodeset') {
+      const l = this.getNodeSet();
+      const r = val.getNodeSet();
+      for (let i = 0; i < r.length; i++) {
+        if (l.some((n) => relation(n.getNumber(), r[i].getNumber()))) {
+          result = true;
+          break;
+        }
+      }
+    } else if (this.getType() === 'nodeset') {
+      result = this.getNodeSet().some((n) => relation(n.getNumber(), val.getNumber()));
+    } else if (val.getType() === 'nodeset') {
+      result = val.getNodeSet().some((n) => relation(n.getNumber(), this.getNumber()));
+    } else {
+      result = relation(this.getNumber(), val.getNumber());
     }
     return result;
   }
