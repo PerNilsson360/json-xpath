@@ -81,26 +81,26 @@ class Node {
     return getString(this.getJson());
   }
 
-  egualJsonPrimitiv(json, val) {
+  compareJsonPrimitiv(json, val, relation) {
     switch (typeof val) {
-      case 'string': return getString(json) === val;
-      case 'number': return getNumber(json) === val;
-      case 'boolean': return Boolean(json) === val;
+      case 'string': return relation(getString(json), val);
+      case 'number': return relation(getNumber(json), val);
+      case 'boolean': return relation(Boolean(json), val);
       default:
-        throw new Error(`Node.equal this ${typeof json} val ${typeof val}`);
+        throw new Error(`Node.compareJsonPrimitiv this ${typeof json} val ${typeof val}`);
     }
   }
-  
-  equal(val) {
+
+  compare(val, relation) {
     const nonPrimitive = (val) => typeof val === 'object' || Array.isArray(val);
     const leftNonPrimitiv = nonPrimitive(this.json);
     const rightNonPrimitive = nonPrimitive(val);
     if (leftNonPrimitiv && rightNonPrimitive) {
-      return this.getString() === val.getString();
+      return relation(this.getString(), val.getString());
     } else if (leftNonPrimitiv) {
-      return this.egualJsonPrimitiv(this.json, val);
+      return this.compareJsonPrimitiv(this.json, val, relation);
     } else {
-      return this.egualJsonPrimitiv(val, this.json);
+      return this.compareJsonPrimitiv(val, this.json, relation);
     }
   }
 

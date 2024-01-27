@@ -151,27 +151,27 @@ class Value {
     }
   }
 
-  compare(val, nodeRelation, primitiveRelation) {
+  compare(val, relation) {
     let result = false;
     if (this.getType() === 'nodeset' && val.getType() === 'nodeset') {
       const l = this.getNodeSet();
       const r = val.getNodeSet();
       for (let i = 0; i < l.length; i++) {
-        if (r.some((n) => nodeRelation(n, (l[i])))) {
+        if (r.some((n) => n.compare(l[i], relation))) {
           result = true;
           break;
         }
       }
     } else if (this.getType() === 'nodeset') {
-      result = this.getNodeSet().some((n) => nodeRelation(n, val.getVal()));
+      result = this.getNodeSet().some((n) => n.compare(val.getVal(), relation));
     } else if (val.getType() === 'nodeset') {
-      result = val.getNodeSet().some((n) => nodeRelation(n, this.getVal()));
+      result = val.getNodeSet().some((n) => n.compare(this.getVal(), relation));
     } else if (this.getType() === 'boolean' && val.getType() === 'boolean') {
-      result = primitiveRelation(this.getBoolean(), val.getBoolean());
+      result = relation(this.getBoolean(), val.getBoolean());
     } else if (this.getType() === 'number' && val.getType() === 'number') {
-      result = primitiveRelation(this.getNumber(), val.getNumber());
+      result = relation(this.getNumber(), val.getNumber());
     } else {
-      result = primitiveRelation(this.getString(), val.getString());
+      result = relation(this.getString(), val.getString());
     }
     return result;
   }

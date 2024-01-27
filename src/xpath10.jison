@@ -199,8 +199,8 @@ AndExpr
 
 EqualityExpr
 : RelationalExpr	                             { $$ = $1; }
-| EqualityExpr "=" RelationalExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compare(b, (a, b) => a.equal(b), (a, b) => a === b), (a) => a); }
-| EqualityExpr "!=" RelationalExpr               { $$ = new BinaryExpr($1, $3, (a, b) => a.compare(b, (a, b) => a.notEqual(b), (a, b) => a !== b), (a) => a); }
+| EqualityExpr "=" RelationalExpr	             { $$ = new BinaryExpr($1, $3, (a, b) => a.compare(b, (a, b) => a === b), (a) => a); }
+| EqualityExpr "!=" RelationalExpr               { $$ = new BinaryExpr($1, $3, (a, b) => a.compare(b, (a, b) => a !== b), (a) => a); }
 ;
 
 RelationalExpr
