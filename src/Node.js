@@ -20,6 +20,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+function getNumber(json) {
+  switch (typeof json) {
+    case 'number': return json;
+    case 'string': return json.length === 0 ? NaN : Number(json);
+    case 'boolean': return Number(json);
+    default: return NaN;
+  }
+}
+
 function getString(json) {
   let result = '';
   const type = typeof json;
@@ -61,33 +70,38 @@ class Node {
   }
 
   getNumber() {
-    const j = this.getJson();
-    const t = typeof j;
-    switch (t) {
-      case 'number': return j;
-      case 'string': return j.length === 0 ? NaN : Number(j);
-      case 'boolean': return Number(j);
-      default: return NaN;
-    }
+    return getNumber(this.json);
   }
 
-  equal(val) {
-    if (val instanceof Node) {
-      return this.getString() === val.getString();
-    } else {
-      const rightType = typeof val;
-      if (typeof this.json === rightType) {
-        return this.json === val;
-      } else if (rightType === 'string') {
-        return this.getString() === val;
-      } else {
-        return this.getString() === JSON.stringify(val);
-      }
+  getBoolean() {
+    return Boolean(this.json);
+  }
+
+  getString() {
+    return getString(this.getJson());
+  }
+
+  egualJsonPrimitiv(json, val) {
+    switch (typeof val) {
+      case 'string': return getString(json) === val;
+      case 'number': return getNumber(json) === val;
+      case 'boolean': return Boolean(json) === val;
+      default:
+        throw new Error(`Node.equal this ${typeof json} val ${typeof val}`);
     }
   }
   
-  getString() {
-    return getString(this.getJson());
+  equal(val) {
+    const nonPrimitive = (val) => typeof val === 'object' || Array.isArray(val);
+    const leftNonPrimitiv = nonPrimitive(this.json);
+    const rightNonPrimitive = nonPrimitive(val);
+    if (leftNonPrimitiv && rightNonPrimitive) {
+      return this.getString() === val.getString();
+    } else if (leftNonPrimitiv) {
+      return this.egualJsonPrimitiv(this.json, val);
+    } else {
+      return this.egualJsonPrimitiv(val, this.json);
+    }
   }
 
   getLocalName() {
