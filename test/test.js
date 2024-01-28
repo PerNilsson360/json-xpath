@@ -674,16 +674,16 @@ describe('test relations', () => {
       const val = evaluate('/a/b/c/e = false()', json);
       assert.equal(val.getBoolean(), false);
     });
-    it('/a/b/c = /a/d/e', () => {
+    it('/a/b/c = /a/d/c', () => {
       const val = evaluate('/a/b/c = /a/d/c', json);
       assert.equal(val.getBoolean(), true);
     });
     it('/a/b/c = /a/d', () => {
-      const val = evaluate('/a/b/c = /a/d/c', json);
+      const val = evaluate('/a/b/c = /a/d', json);
       assert.equal(val.getBoolean(), true);
     });
     it('/a/b/c=/a/d', () => {
-      const val = evaluate('/a/b/c = /a/d/c', json);
+      const val = evaluate('/a/b/c=/a/d', json);
       assert.equal(val.getBoolean(), true);
     });
   });
@@ -736,25 +736,25 @@ describe('test relations', () => {
       const val = evaluate('/a/b/c/e != \'2\'', json);
       assert.equal(val.getBoolean(), true);
     });
-    it('/a/b/c/e = true()', () => {
-      const val = evaluate('/a/b/c/e = true()', json);
-      assert.equal(val.getBoolean(), true);
-    });
-    it('/a/b/c/e = false()', () => {
-      const val = evaluate('/a/b/c/e = false()', json);
+    it('/a/b/c/e != true()', () => {
+      const val = evaluate('/a/b/c/e != true()', json);
       assert.equal(val.getBoolean(), false);
     });
-    it('/a/b/c = /a/d/e', () => {
-      const val = evaluate('/a/b/c = /a/d/c', json);
+    it('/a/b/c/e != false()', () => {
+      const val = evaluate('/a/b/c/e != false()', json);
       assert.equal(val.getBoolean(), true);
     });
-    it('/a/b/c = /a/d', () => {
-      const val = evaluate('/a/b/c = /a/d/c', json);
-      assert.equal(val.getBoolean(), true);
+    it('/a/b/c != /a/d/c', () => {
+      const val = evaluate('/a/b/c != /a/d/c', json);
+      assert.equal(val.getBoolean(), false);
     });
-    it('/a/b/c=/a/d', () => {
-      const val = evaluate('/a/b/c = /a/d/c', json);
-      assert.equal(val.getBoolean(), true);
+    it('/a/b/c != /a/d', () => {
+      const val = evaluate('/a/b/c != /a/d', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c!=/a/d', () => {
+      const val = evaluate('/a/b/c!=/a/d', json);
+      assert.equal(val.getBoolean(), false);
     });
   });
   describe('< on atomic types', () => {
