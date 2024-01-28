@@ -190,7 +190,7 @@ class Value {
     } else if (this.getType() === 'nodeset') {
       result = this.getNodeSet().some((n) => relation(n.getNumber(), val.getNumber()));
     } else if (val.getType() === 'nodeset') {
-      result = val.getNodeSet().some((n) => relation(n.getNumber(), this.getNumber()));
+      result = val.getNodeSet().some((n) => relation(this.getNumber(), n.getNumber()));
     } else {
       result = relation(this.getNumber(), val.getNumber());
     }

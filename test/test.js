@@ -881,4 +881,128 @@ describe('test relations', () => {
       assert.equal(val.getBoolean(), true);
     });
   });
+  describe('> on atomic types', () => {
+    const json = '{}';
+    it('1 > 1', () => {
+      const val = evaluate('1 > 1', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('1 > 2', () => {
+      const val = evaluate('1 > 2', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('true() > true()', () => {
+      const val = evaluate('true() > true()', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('false() > false()', () => {
+      const val = evaluate('false() > false()', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('true() > false()', () => {
+      const val = evaluate('true() > false()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('"a" > "a"', () => {
+      const val = evaluate('"a" > "a"', json);
+      assert.equal(val.getBoolean(), false);
+    });
+  });
+  describe('> on {"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}', () => {
+    const json = '{"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}';
+    it('/a/b/c/e > 2', () => {
+      const val = evaluate('/a/b/c/e > 2', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c/e > \'1\'', () => {
+      const val = evaluate('/a/b/c/e > \'1\'', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c/e > \'2\'', () => {
+      const val = evaluate('/a/b/c/e > \'2\'', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c/e > true()', () => {
+      const val = evaluate('/a/b/c/e > true()', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c/e > false()', () => {
+      const val = evaluate('/a/b/c/e > false()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('/a/b/c > /a/d/c', () => {
+      const val = evaluate('/a/b/c > /a/d/c', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c > /a/d', () => {
+      const val = evaluate('/a/b/c > /a/d', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c>/a/d', () => {
+      const val = evaluate('/a/b/c>/a/d', json);
+      assert.equal(val.getBoolean(), false);
+    });
+  });
+  describe('>= on atomic types', () => {
+    const json = '{}';
+    it('1 >= 1', () => {
+      const val = evaluate('1 >= 1', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('1 >= 2', () => {
+      const val = evaluate('1 >= 2', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('true() >= true()', () => {
+      const val = evaluate('true() >= true()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('false() >= false()', () => {
+      const val = evaluate('false() >= false()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('true() >= false()', () => {
+      const val = evaluate('true() >= false()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('"a" >= "a"', () => {
+      const val = evaluate('"a" >= "a"', json);
+      assert.equal(val.getBoolean(), false);
+    });
+  });
+  describe('>= on {"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}', () => {
+    const json = '{"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}';
+    it('/a/b/c/e >= 2', () => {
+      const val = evaluate('/a/b/c/e >= 2', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c/e >= \'1\'', () => {
+      const val = evaluate('/a/b/c/e >= \'1\'', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('/a/b/c/e >= \'2\'', () => {
+      const val = evaluate('/a/b/c/e >= \'2\'', json);
+      assert.equal(val.getBoolean(), false);
+    });
+    it('/a/b/c/e >= true()', () => {
+      const val = evaluate('/a/b/c/e >= true()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('/a/b/c/e >= false()', () => {
+      const val = evaluate('/a/b/c/e >= false()', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('/a/b/c >= /a/d/c', () => {
+      const val = evaluate('/a/b/c >= /a/d/c', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('/a/b/c >= /a/d', () => {
+      const val = evaluate('/a/b/c >= /a/d', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('/a/b/c>=/a/d', () => {
+      const val = evaluate('/a/b/c>=/a/d', json);
+      assert.equal(val.getBoolean(), true);
+    });
+  });
 });
