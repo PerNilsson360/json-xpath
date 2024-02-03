@@ -66,6 +66,25 @@ class Expr {
   }
 
   evalFilter(env, val) {
+    if (val.getType() !== 'nodeset') {
+      return this.preds.reduce((acc, pred) => {
+        const v = pred.eval(env, val, 0, false);
+        acc &= v.getBoolean();
+        return acc;
+      }, true);
+    }
+    let nodes = val.getNodeSet();
+    for (let i = 0; i < this.preds.length; i++) {
+      const tmp = [];
+      for (let j = 0; j < nodes.length; j++) {
+        const r = this.preds[i].eval(env, new Value(nodes), j, false);
+        if ((r.getType() === 'number' && j + 1 === r.getNumber()) || r.getBoolean()) {
+          tmp.push(nodes[j]);
+        }
+      }
+      nodes = tmp;
+    }
+    return new Value(nodes);
   }
 }
 
@@ -329,7 +348,7 @@ class SelfStep extends Expr {
     const nodeSet = val.getNodeSet();
     let result = [];
     if (firstStep) {
-      result.push(nodeSet[pos]);
+      result = [nodeSet[pos]];
     } else {
       result = nodeSet;
     }
@@ -337,10 +356,10 @@ class SelfStep extends Expr {
   }
 
   evalExpr(env, val, pos, firstStep) {
-    if (val.getType !== 'nodeset') {
+    if (val.getType() !== 'nodeset') {
       return val;
     }
-    return new Value(this.getNodes(env, val, pos, firstStep));
+    return new Value(SelfStep.getNodes(env, val, pos, firstStep));
   }
 }
 
@@ -365,6 +384,17 @@ class SelfMatchStep extends Step {
       }
     }
     return new Value(result);
+  }
+}
+
+class Predicate extends Expr {
+  constructor(expr) {
+    super();
+    this.expr = expr;
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    return this.expr.eval(env, val, pos, firstStep);
   }
 }
 
@@ -626,6 +656,7 @@ class NumericLiteral extends Expr {
 exports.BinaryExpr = BinaryExpr;
 exports.Path = Path;
 exports.Root = Root;
+exports.Predicate = Predicate;
 exports.createStep = Step.create;
 exports.createFunction = Fun.create;
 exports.StringLiteral = StringLiteral;

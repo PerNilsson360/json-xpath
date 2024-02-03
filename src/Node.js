@@ -98,9 +98,9 @@ class Node {
     if (leftNonPrimitiv && rightNonPrimitive) {
       return relation(this.getString(), val.getString());
     } else if (leftNonPrimitiv) {
-      return this.compareJsonPrimitiv(this.json, val, relation);
+      return this.compareJsonPrimitiv(this.getJson(), val, relation);
     } else {
-      return this.compareJsonPrimitiv(val, this.json, relation);
+      return this.compareJsonPrimitiv(val, this.getJson(), relation);
     }
   }
 

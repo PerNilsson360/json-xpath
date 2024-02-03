@@ -97,9 +97,9 @@ RelativeLocationPath
 
 Step
 : NodeTest                                       { $$ = createStep("", $1); }
-| NodeTest Predicates                            {}
+| NodeTest Predicates                            { $$ = createStep("", $1); $$.addPredicates($2); }
 | AxisSpecifier NodeTest                         { $$ = createStep($1, $2); }
-| AxisSpecifier NodeTest Predicates              {}
+| AxisSpecifier NodeTest Predicates              { $$ = createStep($1, $2); $$.addPredicates($3);}
 | AbbreviatedStep                                { $$ = createStep("", $1); }
 ;
 
@@ -119,22 +119,20 @@ AxisName
 ;
 
 NodeTest
-: NameTest	                                     {}
-| NodeTest Predicates                            {}
-| AxisSpecifier NodeTest                         {}
+: NameTest	                                     { $$ = $1; }
 ;
 
 Predicates
-: Predicate                                      {}
-| Predicate Predicates                           {}
+: Predicate                                      { $$ = [$1];}
+| Predicate Predicates                           { $$ = $2;  $$.unshift($1); }
 ;
 
 Predicate
-: "[" PredicateExpr "]"	                         {}
+: "[" PredicateExpr "]"	                         { $$ = new Predicate($2); }
 ;
 
 PredicateExpr
-: Expr                                           {}
+: Expr                                           { $$ = $1; }
 ;
 
 AbbreviatedAbsoluteLocationPath
@@ -184,7 +182,7 @@ PathExpr
 
 FilterExpr
 : PrimaryExpr	                                 { $$ = $1; }
-| FilterExpr Predicate                           {}
+| FilterExpr Predicate                           { $$ = $1; $$.addPredicates([$2]); }
 ;
 
 OrExpr
@@ -234,18 +232,19 @@ FunctionName
 ;
 
 VariableReference
-: '$' IDENTIFIER                                 {}
+: '$' IDENTIFIER                                 { $$ = $2.yytext }
 ;
 
 NameTest
-: '*'                                            {}
-| IDENTIFIER                                     {}
+: '*'                                            { $$ = '*'; }
+| IDENTIFIER                                     { $$ = yytext; }
 ;
 
 %%
 const Path = require('./Expr.js').Path;
 const Root = require('./Expr.js').Root;
 const BinaryExpr = require('./Expr.js').BinaryExpr;
+const Predicate = require('./Expr.js').Predicate;
 const createStep = require('./Expr.js').createStep;
 const createFunction = require('./Expr.js').createFunction;
 const StringLiteral = require('./Expr.js').StringLiteral;

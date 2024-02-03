@@ -1006,3 +1006,13 @@ describe('test relations', () => {
     });
   });
 });
+
+describe('filters/predicates', () => {
+  describe('filters on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('count(/a/b[. = 1])', () => {
+      const val = evaluate('count(/a/b[. = 1])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+  });
+});
