@@ -1150,4 +1150,92 @@ describe('string functions', () => {
       assert.equal(val.getString(), '3');
     });
   });
+  describe('string on {"a":{"b":3,"c":1}}', () => {
+    const json = '{"a":{"b":3,"c":1}}';
+    it('string(/)', () => {
+      const val = evaluate('string(/)', json);
+      assert.equal(val.getString(), '31');
+    });
+    it('string(/a)', () => {
+      const val = evaluate('string(/a)', json);
+      assert.equal(val.getString(), '31');
+    });
+    it('string(/a/b)', () => {
+      const val = evaluate('string(/a/b)', json);
+      assert.equal(val.getString(), '3');
+    });
+    it('string(/a/c)', () => {
+      const val = evaluate('string(/a/c)', json);
+      assert.equal(val.getString(), '1');
+    });
+  });
+  describe('string on {"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}', () => {
+    const json = '{"a":{"b":{"c":{"e":1}},"d":{"c":{"e":1}}}}';
+    it('string(/)', () => {
+      const val = evaluate('string(/)', json);
+      assert.equal(val.getString(), '11');
+    });
+    it('string(/a)', () => {
+      const val = evaluate('string(/a)', json);
+      assert.equal(val.getString(), '11');
+    });
+    it('string(/a/b)', () => {
+      const val = evaluate('string(/a/b)', json);
+      assert.equal(val.getString(), '1');
+    });
+    it('string(/a/b/c)', () => {
+      const val = evaluate('string(/a/b/c)', json);
+      assert.equal(val.getString(), '1');
+    });
+    it('string(/a/b/c/e)', () => {
+      const val = evaluate('string(/a/b/c/e)', json);
+      assert.equal(val.getString(), '1');
+    });
+    it('string(/a/b/c/e/z)', () => {
+      const val = evaluate('string(/a/b/c/e/z)', json);
+      assert.equal(val.getString(), '');
+    });
+  });
+  describe('string on {"a":{"b":1,"c":true,"d":"foo"}}', () => {
+    const json = '{"a":{"b":1,"c":true,"d":"foo"}}';
+    it('string(/)', () => {
+      const val = evaluate('string(/)', json);
+      assert.equal(val.getString(), '1truefoo');
+    });
+    it('string(/a)', () => {
+      const val = evaluate('string(/a)', json);
+      assert.equal(val.getString(), '1truefoo');
+    });
+    it('string(/a/b)', () => {
+      const val = evaluate('string(/a/b)', json);
+      assert.equal(val.getString(), '1');
+    });
+    it('string(/a/c)', () => {
+      const val = evaluate('string(/a/c)', json);
+      assert.equal(val.getString(), 'true');
+    });
+    it('string(/a/d)', () => {
+      const val = evaluate('string(/a/d)', json);
+      assert.equal(val.getString(), 'foo');
+    });
+  });
+  describe('string on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('string(/)', () => {
+      const val = evaluate('string(/)', json);
+      assert.equal(val.getString(), '1234');
+    });
+    it('string(/a)', () => {
+      const val = evaluate('string(/a)', json);
+      assert.equal(val.getString(), '1234');
+    });
+    it('string(/a/b)', () => {
+      const val = evaluate('string(/a/b)', json);
+      assert.equal(val.getString(), '1');
+    });
+    it('string(/a/b)', () => {
+      const val = evaluate('string(//b)', json);
+      assert.equal(val.getString(), '1');
+    });
+  });
 });
