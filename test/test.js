@@ -995,7 +995,7 @@ describe('test relations', () => {
     it('/a/b/c >= /a/d/c', () => {
       const val = evaluate('/a/b/c >= /a/d/c', json);
       assert.equal(val.getBoolean(), true);
-    });
+    });<
     it('/a/b/c >= /a/d', () => {
       const val = evaluate('/a/b/c >= /a/d', json);
       assert.equal(val.getBoolean(), true);
@@ -1013,6 +1013,58 @@ describe('filters/predicates', () => {
     it('count(/a/b[. = 1])', () => {
       const val = evaluate('count(/a/b[. = 1])', json);
       assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b[number(.) = 1])', () => {
+      const val = evaluate('count(/a/b[number(.) = 1])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b[string() = \'1\'])', () => {
+      const val = evaluate('count(/a/b[string() = \'1\'])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b[boolean()])', () => {
+      const val = evaluate('count(/a/b[boolean()])', json);
+      assert.equal(val.getNumber(), 4);
+    });
+    it('count(/a/b[not(. = 1)])', () => {
+      const val = evaluate('count(/a/b[not(. = 1)])', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/a/b[not(. = 1)][not(. = 2)])', () => {
+      const val = evaluate('count(/a/b[not(. = 1)][not(. = 2)])', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/a/b[not(. = 1)][not(. = 2)][not(. = 3)])', () => {
+      const val = evaluate('count(/a/b[not(. = 1)][not(. = 2)][not(. = 3)])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b[not(. = 1)][not(. = 2)][not(. = 3)][not(. = 4)])', () => {
+      const val = evaluate('count(/a/b[not(. = 1)][not(. = 2)][not(. = 3)][not(. = 4)])', json);
+      assert.equal(val.getNumber(), 0);
+    });
+    it('count(/a/b[count(//b) = 4])', () => {
+      const val = evaluate('count(/a/b[count(//b) = 4])', json);
+      assert.equal(val.getNumber(), 4);
+    });
+    it('count(/a/b[1])', () => {
+      const val = evaluate('/a/b[1]', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/b[2])', () => {
+      const val = evaluate('/a/b[2]', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/a/b[2 +1])', () => {
+      const val = evaluate('/a/b[2 +1]', json);
+      assert.equal(val.getNumber(), 3);
+    });
+    it('count(/a/b[0])', () => {
+      const val = evaluate('count(/a/b[0])', json);
+      assert.equal(val.getNumber(), 0);
+    });
+    it('count(/a/b[5])', () => {
+      const val = evaluate('count(/a/b[5])', json);
+      assert.equal(val.getNumber(), 0);
     });
   });
 });

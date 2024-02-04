@@ -123,6 +123,18 @@ class Value {
     }
   }
 
+  getNode(pos) {
+    const t = this.getType();
+    if (t !== 'nodeset') {
+      throw new Error(`Value.getNode() not a nodeset ${t}`);
+    }
+    const nodes = this.getNodeSet();
+    if (pos >= nodes.length) {
+      throw new Error(`Value.getNode() pos ${pos} >= ${nodes.length}`);
+    }
+    return nodes[pos];
+  }
+
   getNodeSet() {
     const type = this.getType();
     switch (type) {

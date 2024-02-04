@@ -78,7 +78,11 @@ class Expr {
       const tmp = [];
       for (let j = 0; j < nodes.length; j++) {
         const r = this.preds[i].eval(env, new Value(nodes), j, false);
-        if ((r.getType() === 'number' && j + 1 === r.getNumber()) || r.getBoolean()) {
+        if (r.getType() === 'number') {
+          if (j + 1 === r.getNumber()) {
+            tmp.push(nodes[j]);
+          }
+        } else if (r.getBoolean()) {
           tmp.push(nodes[j]);
         }
       }
@@ -480,6 +484,39 @@ class Fun extends Expr {
   }
 }
 
+class CurrentFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 0);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    return env.getCurrent();
+  }
+}
+
+class LastFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 0);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    return val.getNodeSet().length;
+  }
+}
+
+class PositionFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 0);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    return pos + 1;
+  }
+}
+
 class CountFun extends Fun {
   constructor(name, args) {
     super(args);
@@ -505,6 +542,24 @@ class LocalNameFun extends Fun {
     } else {
       const v = this.args[0].eval(env, val, pos, firstStep);
       return v.getLocalName();
+    }
+  }
+}
+
+// String functions
+class StringFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgsZeroOrOne(name);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    if (this.args.length === 0) {
+      const node = val.getNode(pos);
+      return new Value([node]);
+    } else {
+      const v = this.args[0].eval(env, val, pos, false);
+      return new Value(v.getString());
     }
   }
 }
