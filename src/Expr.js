@@ -503,7 +503,7 @@ class LastFun extends Fun {
   }
 
   evalExpr(env, val, pos, firstStep) {
-    return val.getNodeSet().length;
+    return new Value(val.getNodeSet().length);
   }
 }
 
@@ -514,7 +514,7 @@ class PositionFun extends Fun {
   }
 
   evalExpr(env, val, pos, firstStep) {
-    return pos + 1;
+    return new Value(pos + 1);
   }
 }
 

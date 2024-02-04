@@ -1101,10 +1101,38 @@ describe('filters/predicates', () => {
     // /a/*[count(following-sibling::*) = 1]
   });
   describe('filters on primitive values', () => {
-    const json = '{}';
+    const json = '{"a":{"b":[1, 2, 3, 4]}}';
     it('(1 + 2)[. = 3]', () => {
       const val = evaluate('(1 + 2)[. = 3]', json);
       assert.equal(val.getBoolean(), true);
     });
+    it('1[count(/a/b) = 4]', () => {
+      const val = evaluate('1[count(/a/b) = 4]', json);
+      assert.equal(val.getNumber(), 1);
+    });
+  });
+});
+
+describe('nodeset functions', () => {
+  const json = '{"a":3}';
+  it('/a[position()=1]', () => {
+    const val = evaluate('/a[position()=1]', json);
+    assert.equal(val.getNumber(), 3);
+  });
+  it('/a[position()=last()]', () => {
+    const val = evaluate('/a[position()=last()]', json);
+    assert.equal(val.getStringValue(), '3');
+  });
+  it('local-name(/a[position()=last()])', () => {
+    const val = evaluate('local-name(/a[position()=last()])', json);
+    assert.equal(val.getStringValue(), 'a');
+  });
+  it('count(/a[position()=0])', () => {
+    const val = evaluate('count(/a[position()=0])', json);
+    assert.equal(val.getNumber(), 0);
+  });
+  it('count(/a[position()=2])', () => {
+    const val = evaluate('count(/a[position()=2])', json);
+    assert.equal(val.getNumber(), 0);
   });
 });
