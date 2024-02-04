@@ -1073,5 +1073,38 @@ describe('filters/predicates', () => {
       const val = evaluate('count(/a/*[count(c) > 0])', json);
       assert.equal(val.getNumber(), 1);
     });
+    it('count(/a/*/*[local-name(..) = \'b\'])', () => {
+      const val = evaluate('count(/a/*/*[local-name(..) = \'b\'])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    it('count(/a/*[count(*[local-name(.) = \'c\']) > 0])', () => {
+      const val = evaluate('count(/a/*[count(*[local-name(.) = \'c\']) > 0])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+  });
+  describe('filters on {"a":{"b":[{"c":{"e":1}},{"d":{"e":2}}]}}', () => {
+    const json = '{"a":{"b":[{"c":{"e":1}},{"d":{"e":2}}]}}';
+    it('count(/a/b[count(.//e) = 1])', () => {
+      const val = evaluate('count(/a/b[count(.//e) = 1])', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(/a/b[count(//e) = 2])', () => {
+      const val = evaluate('count(/a/b[count(//e) = 2])', json);
+      assert.equal(val.getNumber(), 2);
+    });
+    it('count(//*[local-name(.) = \'d\'])', () => {
+      const val = evaluate('count(//*[local-name(.) = \'d\'])', json);
+      assert.equal(val.getNumber(), 1);
+    });
+    // TODO:
+    // count(/a/*[count(following-sibling::*) = 1])
+    // /a/*[count(following-sibling::*) = 1]
+  });
+  describe('filters on primitive values', () => {
+    const json = '{}';
+    it('(1 + 2)[. = 3]', () => {
+      const val = evaluate('(1 + 2)[. = 3]', json);
+      assert.equal(val.getBoolean(), true);
+    });
   });
 });

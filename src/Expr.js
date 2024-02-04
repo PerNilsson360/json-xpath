@@ -67,11 +67,12 @@ class Expr {
 
   evalFilter(env, val) {
     if (val.getType() !== 'nodeset') {
-      return this.preds.reduce((acc, pred) => {
+      const keep = this.preds.reduce((acc, pred) => {
         const v = pred.eval(env, val, 0, false);
         acc &= v.getBoolean();
         return acc;
       }, true);
+      return keep ? val : new Value([]);
     }
     let nodes = val.getNodeSet();
     for (let i = 0; i < this.preds.length; i++) {
@@ -178,7 +179,7 @@ class Path extends MultiExpr {
       descendant = new DescendantSearch(step.s);
       descendant.addPredicates(step.takePredicates());
     }
-    this.exprs.push(descendant);
+    this.exps.push(descendant);
   }
 }
 
