@@ -995,7 +995,7 @@ describe('test relations', () => {
     it('/a/b/c >= /a/d/c', () => {
       const val = evaluate('/a/b/c >= /a/d/c', json);
       assert.equal(val.getBoolean(), true);
-    });<
+    });
     it('/a/b/c >= /a/d', () => {
       const val = evaluate('/a/b/c >= /a/d', json);
       assert.equal(val.getBoolean(), true);
@@ -1065,6 +1065,13 @@ describe('filters/predicates', () => {
     it('count(/a/b[5])', () => {
       const val = evaluate('count(/a/b[5])', json);
       assert.equal(val.getNumber(), 0);
+    });
+  });
+  describe('filters on {"a":{"b":{"c":{"e":1}},"d":{"f":{"e":1}}}}', () => {
+    const json = '{"a":{"b":{"c":{"e":1}},"d":{"f":{"e":1}}}}';
+    it('count(/a/*[count(c) > 0])', () => {
+      const val = evaluate('count(/a/*[count(c) > 0])', json);
+      assert.equal(val.getNumber(), 1);
     });
   });
 });

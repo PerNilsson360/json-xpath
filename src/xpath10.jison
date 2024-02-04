@@ -161,8 +161,8 @@ PrimaryExpr
 ;
 
 FunctionCall
-: FunctionName "(" ")"                           { $$ = createFunction($1, []); }
-| FunctionName "(" Arguments ")"                 { $$ = createFunction($1, $3); }
+: IDENTIFIER "(" ")"                           { $$ = createFunction($1, []); }
+| IDENTIFIER "(" Arguments ")"                 { $$ = createFunction($1, $3); }
 ;
 
 Arguments
@@ -225,10 +225,6 @@ MultiplicativeExpr
 UnaryExpr
 : UnionExpr	                                     { $$ = $1; }
 | "-" UnaryExpr                                  { $$ = new BinaryExpr(new NumericLiteral(0), $2, (a, b) => a - b, (a) => a.getNumber());}
-;
-
-FunctionName
-: IDENTIFIER                                     { $$ = yytext; }
 ;
 
 VariableReference

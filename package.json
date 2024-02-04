@@ -4,7 +4,7 @@
   "description": "xpath support for json",
   "main": "xpath10.js",
   "scripts": {
-    "compile": "jison src/xpath10.jison -o src/xpath10.js",
+    "compile": "jison src/xpath10.jison --debug -o src/xpath10.js",
     "lint": "eslint src/Env.js src/Expr.js src/Node.js src/Value.js src/Eval.js test/test.js",
     "test": "mocha",
     "clean": "rm -r *~ src/*~ test/*~ src/xpath10.js"
