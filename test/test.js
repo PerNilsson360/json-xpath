@@ -1136,3 +1136,18 @@ describe('nodeset functions', () => {
     assert.equal(val.getNumber(), 0);
   });
 });
+
+describe('string functions', () => {
+  describe('string on {"a":3}', () => {
+    const json = '{"a":3}';
+    it('string(/)', () => {
+      const val = evaluate('string(/)', json);
+      assert.equal(val.getString(), '3');
+      assert.equal(val.getStringValue(), '3');
+    });
+    it('string(/a)', () => {
+      const val = evaluate('string(/a)', json);
+      assert.equal(val.getString(), '3');
+    });
+  });
+});
