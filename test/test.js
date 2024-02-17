@@ -1268,4 +1268,53 @@ describe('string functions', () => {
       assert.equal(val.getBoolean(), false);
     });
   });
+  describe('contains on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('contains(/, "")', () => {
+      const val = evaluate('contains(/, "")', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('contains(/, "12")', () => {
+      const val = evaluate('contains(/, "12")', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('contains(/, "23")', () => {
+      const val = evaluate('contains(/, "23")', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('contains("foo", "bar")', () => {
+      const val = evaluate('contains("foo", "bar")', json);
+      assert.equal(val.getBoolean(), false);
+    });
+  });
+  describe('substring-before on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('substring-before(/, "4")', () => {
+      const val = evaluate('substring-before(/, "4")', json);
+      assert.equal(val.getString(), '123');
+    });
+    it('(substring-before/, "1")', () => {
+      const val = evaluate('substring-before(/, "1")', json);
+      assert.equal(val.getString(), '');
+    });
+    it('(substring-before/, "")', () => {
+      const val = evaluate('substring-before(/, "")', json);
+      assert.equal(val.getString(), '');
+    });
+  });
+  describe('substring-after on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('substring-after(/, "12")', () => {
+      const val = evaluate('substring-after(/, "12")', json);
+      assert.equal(val.getString(), '34');
+    });
+    it('(substring-after/, "4")', () => {
+      const val = evaluate('substring-after(/, "4")', json);
+      assert.equal(val.getString(), '');
+    });
+    it('(substring-after/, "")', () => {
+      const val = evaluate('substring-after(/, "")', json);
+      assert.equal(val.getString(), '1234');
+    });
+  });
 });

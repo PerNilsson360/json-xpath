@@ -451,7 +451,7 @@ class Fun extends Expr {
       case 'string': return new StringFun(name, args);
       case 'concat': return new ConcatFun(name, args);
       case 'starts-with': return new StartsWithFun(name, args);
-      case 'contains': return new StartsWithFun(name, args);
+      case 'contains': return new ContainsFun(name, args);
       case 'substring-before': return new SubstringBeforeFun(name, args);
       case 'substring-after': return new SubstringAfterFun(name, args);
       case 'substring': return new SubstringFun(name, args);
@@ -591,12 +591,54 @@ class StartsWithFun extends Fun {
     super(args);
     this.checkArgs(name, 2);
   }
-  
+
   evalExpr(env, val, pos, firstStep) {
     const first = this.args[0].eval(env, val, pos, firstStep);
-    const second  = this.args[1].eval(env, val, pos, firstStep);
+    const second = this.args[1].eval(env, val, pos, firstStep);
     const result = first.getString().startsWith(second.getString());
     return new Value(result);
+  }
+}
+
+class ContainsFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 2);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    const first = this.args[0].eval(env, val, pos, firstStep);
+    const second = this.args[1].eval(env, val, pos, firstStep);
+    const result = first.getString().search(second.getString());
+    return new Value(result !== -1);
+  }
+}
+
+class SubstringBeforeFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 2);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    const first = this.args[0].eval(env, val, pos, firstStep).getString();
+    const second = this.args[1].eval(env, val, pos, firstStep).getString();
+    const index = first.search(second);
+    return new Value(first.substring(0, index));
+  }
+}
+
+class SubstringAfterFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 2);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    const first = this.args[0].eval(env, val, pos, firstStep).getString();
+    const second = this.args[1].eval(env, val, pos, firstStep).getString();
+    const index = first.search(second);
+    return new Value(first.substring(index + second.length, first.length));
   }
 }
 
