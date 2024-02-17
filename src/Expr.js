@@ -483,6 +483,12 @@ class Fun extends Expr {
       throw new Error(`Fun.checkArgsZeroOrOne got ${this.args.length} in ${name}`);
     }
   }
+
+  checkArgsGe(name, expectedSize) {
+    if (this.args.length < expectedSize) {
+      throw new Error(`Fun.checkArgsGe ${this.args.length} < ${expectedSize} in ${name}`);
+    }
+  }
 }
 
 class CurrentFun extends Fun {
@@ -565,6 +571,36 @@ class StringFun extends Fun {
   }
 }
 
+class ConcatFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgsGe(name, 2);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    const result = this.args.reduce((acc, arg) => {
+      const v = arg.eval(env, val, pos, firstStep);
+      return acc + v.getString();
+    }, '');
+    return new Value(result);
+  }
+}
+
+class StartsWithFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 2);
+  }
+  
+  evalExpr(env, val, pos, firstStep) {
+    const first = this.args[0].eval(env, val, pos, firstStep);
+    const second  = this.args[1].eval(env, val, pos, firstStep);
+    const result = first.getString().startsWith(second.getString());
+    return new Value(result);
+  }
+}
+
+// Number functions
 class NumberFun extends Fun {
   constructor(name, args) {
     super(args);

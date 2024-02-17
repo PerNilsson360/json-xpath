@@ -1238,4 +1238,34 @@ describe('string functions', () => {
       assert.equal(val.getString(), '1');
     });
   });
+  describe('concat on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('concat(/, "")', () => {
+      const val = evaluate('concat(/, "")', json);
+      assert.equal(val.getString(), '1234');
+    });
+    it('concat(/, "5", 6)', () => {
+      const val = evaluate('concat(/, "5", 6)', json);
+      assert.equal(val.getString(), '123456');
+    });
+  });
+  describe('starts-with on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('starts-with(/, "")', () => {
+      const val = evaluate('starts-with(/, "")', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('starts-with(/, "12")', () => {
+      const val = evaluate('starts-with(/, "12")', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('starts-with(/, "1234")', () => {
+      const val = evaluate('starts-with(/, "1234")', json);
+      assert.equal(val.getBoolean(), true);
+    });
+    it('starts-with("foo", "bar")', () => {
+      const val = evaluate('starts-with("foo", "bar")', json);
+      assert.equal(val.getBoolean(), false);
+    });
+  });
 });
