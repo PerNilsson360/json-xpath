@@ -660,7 +660,7 @@ class SubstringFun extends Fun {
     if (!Number.isFinite(position)) {
       return new Value('');
     }
-    let diff = null;            // how much to remove from length if position < 1
+    let diff = null; // how much to remove from length if position < 1
     if (position < 1) {
       diff = 1 - position;
       position = 1;
@@ -675,7 +675,7 @@ class SubstringFun extends Fun {
       if (!Number.isFinite(len)) {
         argSize = 2;
       } else if (diff) {
-        len -= diff;            // position is before start of string so adjust len
+        len -= diff; // position is before start of string so adjust len
       }
     }
     let result;
