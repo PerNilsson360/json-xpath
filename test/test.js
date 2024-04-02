@@ -1317,4 +1317,51 @@ describe('string functions', () => {
       assert.equal(val.getString(), '1234');
     });
   });
+  describe('substring on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('substring(/, 2)', () => {
+      const val = evaluate('substring(/, 2)', json);
+      assert.equal(val.getString(), '234');
+    });
+    it('substring(/, 4)', () => {
+      const val = evaluate('substring(/, 4)', json);
+      assert.equal(val.getString(), '4');
+    });
+    it('substring("12345", 2, 3)', () => {
+      const val = evaluate('substring("12345", 2, 3)', json);
+      assert.equal(val.getString(), '234');
+    });
+    it('substring("12345", 1.5, 2.6)', () => {
+      const val = evaluate('substring("12345", 2, 3)', json);
+      assert.equal(val.getString(), '234');
+    });
+    it('substring("12345", 0, 3)', () => {
+      const val = evaluate('substring("12345", 0, 3)', json);
+      assert.equal(val.getString(), '12');
+    });
+    it('substring("12345", 0 div 0, 3)', () => {
+      const val = evaluate('substring("12345", 0 div 0, 3)', json);
+      assert.equal(val.getString(), '');
+    });
+    it('substring("12345", 1, 0 div 0)', () => {
+      const val = evaluate('substring("12345", 1, 0 div 0)', json);
+      assert.equal(val.getString(), '');
+    });
+    it('substring("12345", -42)', () => {
+      const val = evaluate('substring("12345", -42)', json);
+      assert.equal(val.getString(), '12345');
+    });
+    it('substring("12345", -42, 1 div 0)', () => {
+      const val = evaluate('substring("12345", -42, 1 div 0)', json);
+      assert.equal(val.getString(), '12345');
+    });
+    it('substring("12345", -42, 1 div 0)', () => {
+      const val = evaluate('substring("12345", -42, 1 div 0)', json);
+      assert.equal(val.getString(), '12345');
+    });
+    it('substring("12345", 1 div 0, 1 div 0)', () => {
+      const val = evaluate('substring("12345", 1  div 0, 1 div 0)', json);
+      assert.equal(val.getString(), '');
+    });
+  });
 });

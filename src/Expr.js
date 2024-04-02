@@ -489,6 +489,12 @@ class Fun extends Expr {
       throw new Error(`Fun.checkArgsGe ${this.args.length} < ${expectedSize} in ${name}`);
     }
   }
+
+  checkArgsTwoOrThree(name) {
+    if (!(this.args.length === 2 || this.args.length === 3)) {
+      throw new Error(`Fun.checkArgsTwoOrThree ${this.args.length} should be 2 or 3`);
+    }
+  }
 }
 
 class CurrentFun extends Fun {
@@ -639,6 +645,46 @@ class SubstringAfterFun extends Fun {
     const second = this.args[1].eval(env, val, pos, firstStep).getString();
     const index = first.search(second);
     return new Value(first.substring(index + second.length, first.length));
+  }
+}
+
+class SubstringFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgsTwoOrThree(name);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    const str = this.args[0].eval(env, val, pos, firstStep).getString();
+    let position = this.args[1].eval(env, val, pos, firstStep).getNumber();
+    if (!Number.isFinite(position)) {
+      return new Value('');
+    }
+    let diff = null;            // how much to remove from length if position < 1
+    if (position < 1) {
+      diff = 1 - position;
+      position = 1;
+    }
+    let argSize = this.args.length;
+    let len;
+    if (argSize === 3) {
+      len = this.args[2].eval(env, val, pos, firstStep).getNumber();
+      if (Number.isNaN(len) || len < 1) {
+        return new Value('');
+      }
+      if (!Number.isFinite(len)) {
+        argSize = 2;
+      } else if (diff) {
+        len -= diff;            // position is before start of string so adjust len
+      }
+    }
+    let result;
+    if (argSize === 2) {
+      result = str.substring(Math.round(position - 1));
+    } else {
+      result = str.substring(Math.round(position - 1), Math.round(position - 1 + len));
+    }
+    return new Value(result);
   }
 }
 
