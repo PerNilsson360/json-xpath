@@ -28,8 +28,9 @@ const parse = require('./xpath10').parse;
 function evaluate(xpath, json) {
   const exp = parse(xpath);
   const context = JSON.parse(json);
-  const env = new Env(new Value([new ObjectNode(null, '', context)]));
-  return exp.eval(env, context);
+  const val = new Value([new ObjectNode(null, '', context)]);
+  const env = new Env(val);
+  return exp.eval(env, val, 0);
 }
 
 exports.evaluate = evaluate;

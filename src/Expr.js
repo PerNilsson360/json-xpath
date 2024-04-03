@@ -688,6 +688,23 @@ class SubstringFun extends Fun {
   }
 }
 
+class StringLengthFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgsZeroOrOne(name);
+  }
+
+  evalExpr(env, val, pos, firstStep) {
+    if (this.args.length === 0) {
+      const node = val.getNode(pos);
+      return new Value(node.getString().length);
+    } else {
+      const v = this.args[0].eval(env, val, pos, firstStep);
+      return new Value(v.getString().length);
+    }
+  }
+}
+
 // Number functions
 class NumberFun extends Fun {
   constructor(name, args) {

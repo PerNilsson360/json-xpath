@@ -1364,4 +1364,23 @@ describe('string functions', () => {
       assert.equal(val.getString(), '');
     });
   });
+  describe('string-length on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('string-length("12345")', () => {
+      const val = evaluate('string-length("12345")', json);
+      assert.equal(val.getNumber(), '5');
+    });
+    it('string-length(/)', () => {
+      const val = evaluate('string-length(/)', json);
+      assert.equal(val.getNumber(), '4');
+    });
+    it('string-length()', () => {
+      const val = evaluate('string-length()', json);
+      assert.equal(val.getNumber(), '4');
+    });
+    it('string-length("")', () => {
+      const val = evaluate('string-length("")', json);
+      assert.equal(val.getNumber(), '');
+    });
+  });
 });
