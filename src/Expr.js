@@ -705,6 +705,29 @@ class StringLengthFun extends Fun {
   }
 }
 
+class TranslateFun extends Fun {
+  constructor(name, args) {
+    super(args);
+    this.checkArgs(name, 3);
+  }
+  evalExpr(env, val, pos, firstStep) {
+    const left = this.args[0].eval(env, val, pos, firstStep).getString();
+    const source = this.args[1].eval(env, val, pos, firstStep).getString();
+    const target = this.args[2].eval(env, val, pos, firstStep).getString();
+    const translateSize = Math.min(source.length, target.length);
+    let result = "";
+    for (let i = 0; i < left.length; i++) {
+      const p = source.search(left[i]);
+      if (p >= 0 && p < translateSize) {
+        result += target[p];
+      } else {
+        result += left[i];
+      }
+    }
+    return new Value(result);
+  }
+}
+
 // Number functions
 class NumberFun extends Fun {
   constructor(name, args) {

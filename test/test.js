@@ -1383,4 +1383,23 @@ describe('string functions', () => {
       assert.equal(val.getNumber(), '');
     });
   });
+  describe('translate on {"a":{"b":[1,2,3,4]}}', () => {
+    const json = '{"a":{"b":[1,2,3,4]}}';
+    it('translate("FOO", "FO", "fo")', () => {
+      const val = evaluate('translate("FOO", "FO", "fo")', json);
+      assert.equal(val.getString(), 'foo');
+    });
+    it('translate("FOO", "FO", "for ever")', () => {
+      const val = evaluate('translate("FOO", "FO", "fo ever")', json);
+      assert.equal(val.getString(), 'foo');
+    });
+    it('translate("FOO", "F", "fo")', () => {
+      const val = evaluate('translate("FOO", "F", "fo")', json);
+      assert.equal(val.getString(), 'fOO');
+    });
+    it('translate(/, "1234", "4321")', () => {
+      const val = evaluate('translate(/, "1234", "4321")', json);
+      assert.equal(val.getString(), '4321');
+    });
+  });
 });
