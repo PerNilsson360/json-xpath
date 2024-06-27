@@ -1383,6 +1383,13 @@ describe('string functions', () => {
       assert.equal(val.getNumber(), '');
     });
   });
+  describe('string-length on {"a":null}', () => {
+    const json = '{"a":null}';
+    it('string-length(/a)', () => {
+      const val = evaluate('string-length(/a)', json);
+      assert.equal(val.getNumber(), 0);
+    });
+  });
   describe('translate on {"a":{"b":[1,2,3,4]}}', () => {
     const json = '{"a":{"b":[1,2,3,4]}}';
     it('translate("FOO", "FO", "fo")', () => {

@@ -24,7 +24,9 @@ function getString(json) {
   let result = '';
   const type = typeof json;
   if (type === 'object') {
-    if (Array.isArray(json)) {
+    if (json === null) {
+      result = '';
+    } else if (Array.isArray(json)) {
       for (let i = 0; i < json.length; i++) {
         result += getString(json[i]);
       }
